@@ -1,5 +1,5 @@
 import os.path
-from InputData import InputData
+from Models.InputDataModel import InputData
 from Data import DataRas
 
 

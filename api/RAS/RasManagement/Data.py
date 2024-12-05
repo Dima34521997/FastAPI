@@ -1,6 +1,6 @@
 import os.path
 from docxtpl import DocxTemplate
-from InputData import *
+from Models.InputDataModel import *
 
 
 class DataRas:
