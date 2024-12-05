@@ -6,7 +6,7 @@ from pydantic import FilePath
 from Executor import *
 from fastapi.responses import FileResponse
 from sqlmodel import create_engine, Session
-from Models.DBModel import Table
+from Models.FileModel import Table
 
 app = FastAPI()
 db_url = "postgresql://api:12345@db/rasmaker"
