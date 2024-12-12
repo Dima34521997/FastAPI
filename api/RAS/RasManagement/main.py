@@ -1,12 +1,14 @@
-from argparse import FileType
-
 from fastapi import FastAPI
+from jinja2 import Template
 from pydantic import FilePath
 
 from Executor import *
 from fastapi.responses import FileResponse
 from sqlmodel import create_engine, Session
-from Models.FileModel import Table
+
+from Models.FileModel import File
+from Models.FileTypeModel import FileType
+from Models.TemplateTypeModel import TemplateType
 
 app = FastAPI()
 db_url = "postgresql://api:12345@db/rasmaker"
@@ -23,14 +25,45 @@ async def make_ras(json_data: InputData) -> FileResponse:
     return FileResponse(execute(json_data))
 
 
-@app.post("/addelement")
-async def add_element(file_name: str,
-                      file_path: str,
-                      file_datetime: str,
-                      file_type: str):
+@app.post("/add_element_file")
+async def add_element_to_file(id: int,
+                      name: str,
+                      path: str,
+                      datetime: str,
+                      type_id: int):
+
     with Session(engine) as session:
-        field = Table(FileName=file_name, FilePath=file_path,
-                      FileDatetime=file_datetime, FileType=file_type)
+        field = File(Id=id,
+                     Name=name,
+                     Path=path,
+                     Datetime=datetime,
+                     TypeId=type_id)
+
+        session.add(field)
+        session.commit()
+
+
+@app.post("/add_element_file_type")
+async def add_element_to_file_type(id: int,
+                      name: str):
+
+    with Session(engine) as session:
+        field = FileType(Id=id,
+                     Name=name)
+
+        session.add(field)
+        session.commit()
+
+
+@app.post("/add_element_template_type")
+async def add_element_to_template_type(id: int,
+                      device_type_id: str,
+                      template_path: str):
+
+    with Session(engine) as session:
+        field = TemplateType(Id=id,
+                     DeviceTypeId=device_type_id,
+                     TemplatePath=template_path)
 
         session.add(field)
         session.commit()

@@ -14,5 +14,6 @@ class File(SQLModel, table=True):
     Id: int = Field(primary_key=True)
     Name: str
     Path: str # путь на папку где хранится итоговый документ
-    TypeId: int = Field(foreign_key='FileType.Id')
+    Datetime: str
+    TypeId: int = Field(foreign_key='filetype.Id')
     # TypeId просто ссылает на связанную таблицу FileType
