@@ -1,5 +1,8 @@
 from pydantic import BaseModel
 
+class DeviceType(BaseModel):
+    ID: int
+
 
 class Header(BaseModel):
     RasNumber: int
@@ -19,39 +22,47 @@ class Result(BaseModel):
 class InputData(BaseModel):
     Results: list[Result]
     Header: Header
+    DeviceType: DeviceType
 
-
-"""{
-    "Results": [
+"""
+{
+  "Results": [
     {
-        "OrderOperation": 1,
-        "ResponsibleFullName": "Терентиев Владимир Александрович",
-        "EndTime": "2024-10-11",
-        "Received": 20,
-        "Returned": 20,
-        "Notes": ""
+      "OrderOperation": 1,
+      "ResponsibleFullName": "Терентиев Владимир Александрович",
+      "EndTime": "2024-10-11",
+      "Received": 20,
+      "Returned": 20,
+      "Notes": ""
     },
     {
-        "OrderOperation": 2,
-        "ResponsibleFullName": "Терентиев Владимир Александрович",
-        "EndTime": "2024-10-11",
-        "Received": 20,
-        "Returned": 20,
-        "Notes": ""
+      "OrderOperation": 2,
+      "ResponsibleFullName": "Терентиев Владимир Александрович",
+      "EndTime": "2024-10-11",
+      "Received": 20,
+      "Returned": 20,
+      "Notes": ""
     },
     {
-        "OrderOperation": 5,
-        "ResponsibleFullName": "Терентиев Владимир Александрович",
-        "EndTime": "2024-10-11",
-        "Received": 20,
-        "Returned": 17,
-        "Notes": ""
-    }],
-
-
-    "Header": {
-        "RasNumber": 12,
-        "Amount": 20,
-        "DeviceManNumbers": "1101 - 1200"
-    }}"""
-
+      "OrderOperation": 5,
+      "ResponsibleFullName": "Терентиев Владимир Александрович",
+      "EndTime": "2024-10-11",
+      "Received": 20,
+      "Returned": 17,
+      "Notes": ""
+    }
+  ],
+  
+  "Header": 
+  {
+    "RasNumber": 12,
+    "Amount": 20,
+    "DeviceManNumbers": "1101 - 1200"
+  },
+  
+  "DeviceType": 
+  {
+    "ID": "1"
+  }
+}
+"""
