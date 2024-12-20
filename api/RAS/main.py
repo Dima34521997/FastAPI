@@ -1,3 +1,5 @@
+from tempfile import template
+
 from fastapi import FastAPI
 from jinja2 import Template
 from pydantic import FilePath
@@ -66,3 +68,21 @@ async def add_element_to_template_type(id: int,
 
         session.add(field)
         session.commit()
+
+
+# region Тест всякого
+# templates_path = '/home/dima/rasmaker_docker/api/RAS/Templates/'
+#
+# templates = os.listdir(templates_path)
+#
+# name = 'пи_026-04'
+#
+# for device in templates:
+#     if name.lower() in device.lower():
+#         template = f'{templates_path}{device}'
+#         print(template)
+#
+# print(templates)
+
+
+# endregion

@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
-class DeviceType(BaseModel):
-    ID: int
+class DeviceName(BaseModel):
+    Name: str
 
 
 class Header(BaseModel):
@@ -22,7 +22,7 @@ class Result(BaseModel):
 class InputData(BaseModel):
     Results: list[Result]
     Header: Header
-    DeviceType: DeviceType
+    DeviceName: DeviceName
 
 """
 {
@@ -60,9 +60,9 @@ class InputData(BaseModel):
     "DeviceManNumbers": "1101 - 1200"
   },
   
-  "DeviceType": 
+  "DeviceName": 
   {
-    "ID": "1"
+    "Name": "пи_026-04"
   }
 }
 """

@@ -3,26 +3,60 @@ from docxtpl import DocxTemplate
 from Models.InputDataModel import *
 
 
+
 class DataRas:
     def __init__(self, json: InputData):
 
-        self.results, self.header, self.ID = \
-            json.Results, json.Header, json.DeviceType.__dict__['ID']
+        self.results, self.header, self.name = \
+            json.Results, json.Header, json.DeviceName.__dict__['Name']
 
+        self.templates_path = '/home/dima/rasmaker_docker/api/RAS/Templates/'
 
-        self.template_names = {1: 'ПИ_026-04.docx',
-                               2: 'ПИ_026-02.docx',
-                               3: 'ПИ_004.docx',
-                               4: 'Датчик_глаза.docx',
-                               5: 'МТП.docx',
-                               }
+        self.templates = os.listdir(self.templates_path)
 
-
-        self.template =\
-            (f'/home/dima/rasmaker_docker/api/RAS/RasManagement/Templates/'
-             f'{self.template_names[self.ID]}')
-
+        for device in self.templates:
+            if self.name.lower() in device.lower():
+                self.template = self.templates_path + device
 
         self.MSL = DocxTemplate(self.template)
         self.save_dir: str = os.path.join(os.getcwd(), "Templates", "МСЛ", "")
 
+
+"""
+{
+   "Results":[
+      {
+         "OrderOperation":1,
+         "ResponsibleFullName":"Терентиев Владимир Александрович",
+         "EndTime":"2024-10-11",
+         "Received":20,
+         "Returned":20,
+         "Notes":""
+      },
+      {
+         "OrderOperation":2,
+         "ResponsibleFullName":"Терентиев Владимир Александрович",
+         "EndTime":"2024-10-11",
+         "Received":20,
+         "Returned":20,
+         "Notes":""
+      },
+      {
+         "OrderOperation":5,
+         "ResponsibleFullName":"Терентиев Владимир Александрович",
+         "EndTime":"2024-10-11",
+         "Received":20,
+         "Returned":17,
+         "Notes":""
+      }
+   ],
+   "Header":{
+      "RasNumber":12,
+      "Amount":20,
+      "DeviceManNumbers":"1101 - 1200"
+   },
+   "DeviceName":{
+      "Name":"пи_026-04"
+   }
+}
+"""
