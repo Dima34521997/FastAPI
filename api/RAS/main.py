@@ -1,18 +1,19 @@
-from tempfile import template
-
+import os.path
 from fastapi import FastAPI
 from jinja2 import Template
 from pydantic import FilePath
-
-from Executor import *
+from docxtpl import DocxTemplate
 from fastapi.responses import FileResponse
 from sqlmodel import create_engine, Session
+from fastapi import FastAPI,HTTPException,BackgroundTasks
 
 from Models.FileModel import File
 from Models.FileTypeModel import FileType
+from Models.InputDataModel import *
 from Models.TemplateTypeModel import TemplateType
 
-from Data import DataRas
+
+
 
 app = FastAPI()
 db_url = "postgresql://api:12345@db/rasmaker"
@@ -24,9 +25,52 @@ async def home_page():
     return {"key": "value"}
 
 
-@app.post("/makeras")
-async def make_ras(json_data: InputData) -> FileResponse:
-    return FileResponse(execute(json_data))
+@app.post("/makeras", status_code=201)
+async def make_ras(json_data: InputData) -> str:
+
+    results, header, name = \
+        json_data.Results, json_data.Header, json_data.DeviceName.__dict__['Name']
+    '''Распарсили поступивший JSON'''
+
+    templates_path = '/home/dima/rasmaker_docker/api/RAS/Templates/'
+    '''Путь к папке с шаблонами'''
+
+    templates = os.listdir(templates_path)
+    '''Возвращает список, содержащий имена шаблонов в каталоге'''
+
+    template = ''
+
+    for device in templates:
+        '''Ищем подходящий шаблон из списка'''
+        if name.lower() in device.lower():
+            template = templates_path + device
+
+    if not template:
+        raise HTTPException(status_code=600, detail="Не удалось найти подходящий шаблон")
+
+
+    msl = DocxTemplate(template)
+    save_dir: str = os.path.join(os.getcwd(), "Templates", "МСЛ", "")
+
+    context = dict()
+
+    for string in results:
+        order = str(string.OrderOperation)
+
+        context["ResponsibleFullName" + order] = string.ResponsibleFullName
+        context["EndTime" + order] = string.EndTime
+        context["Received" + order] = string.Received
+        context["Returned" + order] = string.Returned
+        context["Notes" + order] = string.Notes
+
+    context = {**context, **header.__dict__}
+    msl.render(context)
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    msl.save(os.path.join(save_dir, os.path.split(template)[-1]))
+    #return FileResponse(os.path.join(save_dir, os.path.split(template)[-1]))
+    return os.path.join(save_dir, os.path.split(template)[-1])
 
 
 @app.post("/add_element_file")
@@ -68,21 +112,3 @@ async def add_element_to_template_type(id: int,
 
         session.add(field)
         session.commit()
-
-
-# region Тест всякого
-# templates_path = '/home/dima/rasmaker_docker/api/RAS/Templates/'
-#
-# templates = os.listdir(templates_path)
-#
-# name = 'пи_026-04'
-#
-# for device in templates:
-#     if name.lower() in device.lower():
-#         template = f'{templates_path}{device}'
-#         print(template)
-#
-# print(templates)
-
-
-# endregion

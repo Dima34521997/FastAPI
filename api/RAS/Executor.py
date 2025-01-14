@@ -1,25 +1,39 @@
-import os.path
-from Models.InputDataModel import InputData
-from Data import DataRas
 
-
-def execute(json_data: InputData):
-    data = DataRas(json_data)
-    context = dict()
-
-    for string in data.results:
-        order = str(string.OrderOperation)
-
-        context["ResponsibleFullName" + order] = string.ResponsibleFullName
-        context["EndTime" + order] = string.EndTime
-        context["Received" + order] = string.Received
-        context["Returned" + order] = string.Returned
-        context["Notes" + order] = string.Notes
-
-    context = {**context, **data.header.__dict__}
-    data.MSL.render(context)
-    if not os.path.exists(data.save_dir):
-        os.makedirs(data.save_dir)
-
-    data.MSL.save(os.path.join(data.save_dir, os.path.split(data.template)[-1]))
-    return os.path.join(data.save_dir, os.path.split(data.template)[-1])
+"""
+{
+   "Results":[
+      {
+         "OrderOperation":1,
+         "ResponsibleFullName":"Терентиев Владимир Александрович",
+         "EndTime":"2024-10-11",
+         "Received":20,
+         "Returned":20,
+         "Notes":""
+      },
+      {
+         "OrderOperation":2,
+         "ResponsibleFullName":"Терентиев Владимир Александрович",
+         "EndTime":"2024-10-11",
+         "Received":20,
+         "Returned":20,
+         "Notes":""
+      },
+      {
+         "OrderOperation":5,
+         "ResponsibleFullName":"Терентиев Владимир Александрович",
+         "EndTime":"2024-10-11",
+         "Received":20,
+         "Returned":17,
+         "Notes":""
+      }
+   ],
+   "Header":{
+      "RasNumber":12,
+      "Amount":20,
+      "DeviceManNumbers":"1101 - 1200"
+   },
+   "DeviceName":{
+      "Name":"пи_026-04"
+   }
+}
+"""
