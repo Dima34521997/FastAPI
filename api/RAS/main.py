@@ -38,19 +38,23 @@ async def make_ras(json_data: InputData) -> str:
     templates = os.listdir(templates_path)
     '''Возвращает список, содержащий имена шаблонов в каталоге'''
 
-    template = ''
+    template_path = ''
+    device_name = ''
+
+    msl_num: str = json_data.Header.__dict__["RasNumber"]
 
     for device in templates:
         '''Ищем подходящий шаблон из списка'''
         if name.lower() in device.lower():
-            template = templates_path + device
+            template_path = templates_path + device
+            device_name = device.split('.')[0]
 
-    if not template:
+    if not template_path:
         raise HTTPException(status_code=600, detail="Не удалось найти подходящий шаблон")
 
 
-    msl = DocxTemplate(template)
-    save_dir: str = os.path.join(os.getcwd(), "Templates", "МСЛ", "")
+    msl = DocxTemplate(template_path)
+    save_dir: str = os.path.join(os.getcwd(), "Готовые МСЛ", "")
 
     context = dict()
 
@@ -64,13 +68,15 @@ async def make_ras(json_data: InputData) -> str:
         context["Notes" + order] = string.Notes
 
     context = {**context, **header.__dict__}
+
     msl.render(context)
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
-    msl.save(os.path.join(save_dir, os.path.split(template)[-1]))
+
+    msl.save(os.path.join(save_dir, f'МСЛ {device_name} № {msl_num}'))
     #return FileResponse(os.path.join(save_dir, os.path.split(template)[-1]))
-    return os.path.join(save_dir, os.path.split(template)[-1])
+    return os.path.join(save_dir, os.path.split(template_path)[-1])
 
 
 @app.post("/add_element_file")
