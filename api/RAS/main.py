@@ -1,19 +1,13 @@
 import os.path
-from fastapi import FastAPI
-from jinja2 import Template
-from pydantic import FilePath
+
 from docxtpl import DocxTemplate
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, HTTPException
 from sqlmodel import create_engine, Session
-from fastapi import FastAPI,HTTPException,BackgroundTasks
 
 from Models.FileModel import File
 from Models.FileTypeModel import FileType
 from Models.InputDataModel import *
 from Models.TemplateTypeModel import TemplateType
-
-
-
 
 app = FastAPI()
 db_url = "postgresql://api:12345@db/rasmaker"
@@ -39,7 +33,7 @@ async def make_ras(json_data: InputData) -> str:
     '''Возвращает список, содержащий имена шаблонов в каталоге'''
 
     template_path = ''
-    device_name = ''
+    device_name: str = ''
 
     msl_num: str = json_data.Header.__dict__["RasNumber"]
 
@@ -73,8 +67,8 @@ async def make_ras(json_data: InputData) -> str:
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
-
-    msl.save(os.path.join(save_dir, f'МСЛ {device_name} № {msl_num}'))
+    # msl.save(os.path.join(save_dir, os.path.split(template)[-1]))
+    msl.save(os.path.join(save_dir, f'МСЛ {device_name} № {msl_num}.docx'))
     #return FileResponse(os.path.join(save_dir, os.path.split(template)[-1]))
     return os.path.join(save_dir, os.path.split(template_path)[-1])
 
