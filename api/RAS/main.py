@@ -1,5 +1,5 @@
 import os.path
-
+from pathlib import Path
 from docxtpl import DocxTemplate
 from fastapi import FastAPI, HTTPException
 from sqlmodel import create_engine, Session
@@ -26,7 +26,10 @@ async def make_ras(json_data: InputData) -> str:
         json_data.Results, json_data.Header, json_data.DeviceName.__dict__['Name']
     '''Распарсили поступивший JSON'''
 
-    templates_path = '/home/dima/rasmaker_docker/api/RAS/Templates/'
+    # templates_path = '/home/dima/rasmaker_docker/api/RAS/Templates/'
+    base_path = Path(__file__).resolve().parent
+    print(base_path)
+    templates_path = base_path.joinpath('Templates')
     '''Путь к папке с шаблонами'''
 
     templates = os.listdir(templates_path)
@@ -39,12 +42,15 @@ async def make_ras(json_data: InputData) -> str:
 
     for device in templates:
         '''Ищем подходящий шаблон из списка'''
-        if name.lower() in device.lower():
-            template_path = templates_path + device
-            device_name = device.split('.')[0]
+        if name:
+            if name.lower() in device.lower():
+                template_path = templates_path.joinpath(device)
+                device_name = device.split('.')[0]
+        else:
+            raise HTTPException(status_code=601, detail="Ошибка JSON - пустой Name")
 
     if not template_path:
-        raise HTTPException(status_code=600, detail="Не удалось найти подходящий шаблон")
+        raise HTTPException(status_code=602, detail="Не удалось найти подходящий шаблон")
 
 
     msl = DocxTemplate(template_path)
